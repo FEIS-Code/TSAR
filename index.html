@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Teacher Appraisal</title>
+    <style>
+        /* --- MODERN MOBILE-FIRST CSS --- */
+        :root {
+            --primary: #2563eb; /* Modern Blue */
+            --primary-dark: #1e40af;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* Main Container */
+        .app-container {
+            max-width: 600px; /* Limits width on desktop, full on mobile */
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            background: var(--bg);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Typography */
+        h1 { font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin: 0 0 10px 0; text-align: center; }
+        h2 { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-top: 30px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
+        p { color: var(--text-sub); text-align: center; margin-top: 0; font-size: 0.9rem; }
+
+        /* Inputs & Forms */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px; /* Prevents iOS zoom */
+            background: #f9fafb;
+            transition: all 0.2s;
+            appearance: none; /* Removes default OS styling */
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea { min-height: 100px; resize: vertical; }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: transform 0.1s, background 0.2s;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-logout { background: transparent; color: var(--text-sub); border: 1px solid var(--border); box-shadow: none; padding: 8px 16px; width: auto; font-size: 0.85rem; }
+
+        /* Login Screen */
+        #login-view {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        /* Error Message */
+        .error-toast {
+            background: #fee2e2;
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 5px solid #e5e7eb;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Hidden Helpers */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="login-view" class="app-container">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1>🔐 Staff Portal</h1>
+                <p>Teacher Self-Appraisal 2025</p>
+            </div>
+            
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="e.g. John Doe" autocomplete="off">
+            </div>
+            <div style="height: 15px;"></div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••">
+            </div>
+            
+            <div id="login-error" class="error-toast">Incorrect Credentials</div>
+            
+            <div style="height: 25px;"></div>
+            <button onclick="performLogin()" class="btn">Log In</button>
+        </div>
+    </div>
+
+    <div id="form-view" class="app-container hidden">
+        <div class="header-bar">
+            <div style="font-weight: 700; color: var(--primary);" id="user-display"></div>
+            <button onclick="location.reload()" class="btn btn-logout">Sign Out</button>
+        </div>
+
+        <form id="appraisal-form">
+            <input type="hidden" name="Teacher Name" id="hidden-teacher-name">
+
+            <div class="card">
+                <h2>📋 Basic Info</h2>
+                <label>Department / Grade</label>
+                <input type="text" name="Department" required placeholder="e.g. Science / Grade 5">
+                
+                <div style="height: 15px;"></div>
+                <label>Subjects Taught</label>
+                <input type="text" name="Subjects" required>
+
+                <div style="height: 15px;"></div>
+                <label>Years of Experience</label>
+                <input type="number" name="Experience" required>
+            </div>
+
+            <div class="card">
+                <h2>🎓 Instruction (1-5)</h2>
+                <label>Lesson Planning Effectiveness</label>
+                <input type="number" name="Q5_Planning" min="1" max="5" placeholder="Rate 1-5" required>
+
+                <div style="height: 15px;"></div>
+                <label>Student-centred Methods</label>
+                <input type="number" name="Q6_StudentCentred" min="1" max="5" placeholder="Rate 1-5" required>
+
+                <div style="height: 15px;"></div>
+                <label>Differentiation</label>
+                <input type="number" name="Q7_Differentiation" min="1" max="5" placeholder="Rate 1-5" required>
+
+                <div style="height: 15px;"></div>
+                <label>Innovative Strategy Used</label>
+                <textarea name="Q8_Innovation" placeholder="Describe briefly..."></textarea>
+
+                <div style="height: 15px;"></div>
+                <label>Tech Integration</label>
+                <textarea name="Q9_Tech"></textarea>
+            </div>
+
+            <div class="card">
+                <h2>🏫 Management</h2>
+                <label>Classroom Discipline (1-5)</label>
+                <input type="number" name="Q10_Discipline" min="1" max="5">
+
+                <div style="height: 15px;"></div>
+                <label>Positive Environment (1-5)</label>
+                <input type="number" name="Q11_Environment" min="1" max="5">
+
+                <div style="height: 15px;"></div>
+                <label>Strategies Used</label>
+                <textarea name="Q12_Strategies"></textarea>
+            </div>
+
+            <div class="card">
+                <h2>🙋 Engagement</h2>
+                <label>Engagement Level (1-5)</label>
+                <input type="number" name="Q13_Engagement" min="1" max="5">
+
+                <div style="height: 15px;"></div>
+                <label>Student Participation</label>
+                <select name="Q14_Participation">
+                    <option value="Always">Always</option>
+                    <option value="Often">Often</option>
+                    <option value="Sometimes">Sometimes</option>
+                    <option value="Rarely">Rarely</option>
+                </select>
+
+                <div style="height: 15px;"></div>
+                <label>Evidence of Outcome</label>
+                <textarea name="Q15_Evidence"></textarea>
+            </div>
+
+            <div class="card">
+                <h2>💼 Professionalism</h2>
+                <label>Task Completion (1-5)</label>
+                <input type="number" name="Q16_Tasks" min="1" max="5">
+                
+                <div style="height: 15px;"></div>
+                <label>Punctuality (1-5)</label>
+                <input type="number" name="Q17_Punctuality" min="1" max="5">
+
+                <div style="height: 15px;"></div>
+                <label>Collaboration (1-5)</label>
+                <input type="number" name="Q18_Collaboration" min="1" max="5">
+
+                <div style="height: 15px;"></div>
+                <label>Parent Communication (1-5)</label>
+                <input type="number" name="Q19_Communication" min="1" max="5">
+            </div>
+
+            <div class="card">
+                <h2>🌱 Growth & Goals</h2>
+                <label>Trainings Attended</label>
+                <textarea name="Q20_Training"></textarea>
+
+                <div style="height: 15px;"></div>
+                <label>Application of Learning</label>
+                <textarea name="Q21_Application"></textarea>
+
+                <div style="height: 15px;"></div>
+                <label>Biggest Achievement</label>
+                <textarea name="Q26_Achievement"></textarea>
+
+                <div style="height: 15px;"></div>
+                <label>Goals for Next Year</label>
+                <textarea name="Q28_Goals"></textarea>
+            </div>
+
+            <div style="padding-bottom: 40px;">
+                <button type="submit" class="btn">Submit Final Appraisal</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <h3 style="margin-top: 20px; color: var(--primary);">Processing...</h3>
+    </div>
+
+    <script>
+        // ==========================================
+        // PASTE YOUR GOOGLE SCRIPT URL HERE
+        // ==========================================
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzOtCa9mNW7EOPRh_Aem5MhKRwrMDhlURpTOHWZIJsXSnxwT7viueaWcT6RABVMOxO_aA/exec'; 
+        // ==========================================
+
+        function showLoading() { document.getElementById('loading-overlay').style.display = 'flex'; }
+        function hideLoading() { document.getElementById('loading-overlay').style.display = 'none'; }
+
+        function performLogin() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            const errorBox = document.getElementById('login-error');
+
+            if(!u || !p) {
+                errorBox.innerText = "Please enter both username and password";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            showLoading();
+            errorBox.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('action', 'login');
+            formData.append('username', u);
+            formData.append('password', p);
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.result === 'success') {
+                    document.getElementById('login-view').classList.add('hidden');
+                    document.getElementById('form-view').classList.remove('hidden');
+                    document.getElementById('user-display').innerText = "👤 " + u;
+                    document.getElementById('hidden-teacher-name').value = u;
+                    window.scrollTo(0,0);
+                } else {
+                    errorBox.innerText = "Invalid Username or Password";
+                    errorBox.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert("Connection Error. Please check your internet.");
+            });
+        }
+
+        const form = document.getElementById('appraisal-form');
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            if(!confirm("Submit Appraisal? This cannot be undone.")) return;
+
+            showLoading();
+            const formData = new FormData(form);
+            formData.append('action', 'submit');
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.result === 'success') {
+                    alert("✅ Success! Appraisal saved.");
+                    location.reload();
+                } else {
+                    alert("❌ Error: " + data.message);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert("❌ Network Error: Could not submit.");
+            });
+        });
+    </script>
+</body>
+</html>
