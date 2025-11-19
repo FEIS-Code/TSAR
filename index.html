@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Teacher Appraisal</title>
+    <title>TSAR | Teacher Self Appraisal Report</title>
     <style>
         /* --- MODERN MOBILE-FIRST CSS --- */
         :root {
@@ -156,8 +156,8 @@
     <div id="login-view" class="app-container">
         <div class="card">
             <div style="text-align: center; margin-bottom: 20px;">
-                <h1>🔐 Staff Portal</h1>
-                <p>Teacher Self-Appraisal 2025</p>
+                <h1>🔐 TSAR Portal</h1>
+                <p>Teacher Self Appraisal Report</p>
             </div>
             
             <div class="form-group">
@@ -182,6 +182,8 @@
             <div style="font-weight: 700; color: var(--primary);" id="user-display"></div>
             <button onclick="location.reload()" class="btn btn-logout">Sign Out</button>
         </div>
+        
+        <h1 style="text-align: center; margin-bottom: 30px;">Teacher Self Appraisal Report</h1>
 
         <form id="appraisal-form">
             <input type="hidden" name="Teacher Name" id="hidden-teacher-name">
@@ -283,11 +285,33 @@
                 <textarea name="Q21_Application"></textarea>
 
                 <div style="height: 15px;"></div>
-                <label>Biggest Achievement</label>
+                <label>Areas for improvement</label>
+                <textarea name="Q22_Improvement"></textarea>
+                
+                <div style="height: 15px;"></div>
+                <label>Skills or support needed</label>
+                <textarea name="Q23_Support"></textarea>
+            </div>
+            
+            <div class="card">
+                <h2>⭐ Contributions & Reflection</h2>
+                <label>Events/Committees Contributed to</label>
+                <textarea name="Q24_Events"></textarea>
+
+                <div style="height: 15px;"></div>
+                <label>Involvement in Co-curriculars (1-5)</label>
+                <input type="number" name="Q25_Involvement" min="1" max="5">
+
+                <div style="height: 15px;"></div>
+                <label>Biggest Achievement this year</label>
                 <textarea name="Q26_Achievement"></textarea>
 
                 <div style="height: 15px;"></div>
-                <label>Goals for Next Year</label>
+                <label>Challenges Faced</label>
+                <textarea name="Q27_Challenges"></textarea>
+
+                <div style="height: 15px;"></div>
+                <label>Goals for the Upcoming Year</label>
                 <textarea name="Q28_Goals"></textarea>
             </div>
 
